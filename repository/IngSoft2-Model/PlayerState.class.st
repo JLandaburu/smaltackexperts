@@ -25,3 +25,8 @@ Class {
 	#superclass : #Object,
 	#category : #'IngSoft2-Model'
 }
+
+{ #category : #action }
+PlayerState >> rollDicesFor: aPlayer in: aGame [
+	self subclassResponsibility
+]

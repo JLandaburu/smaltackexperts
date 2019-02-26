@@ -66,11 +66,7 @@ Game >> activatePermanentCardsFor: aPlayer [
 
 { #category : #adding }
 Game >> addToPermanentCards: aCard for: aPlayer [
-	| permanentCards |
-	permanentCards := OrderedCollection new.
-	permanentCards addAll: (self permanentCardsAffecting: aPlayer).
-	permanentCards add: aCard.
-	 permanentCardsAffectingEachPlayer at: aPlayer put: permanentCards
+	(self permanentCardsAffecting: aPlayer) add: aCard
 ]
 
 { #category : #assertions }
@@ -120,12 +116,9 @@ Game >> changeLastCardPlayed: aCard [
 
 { #category : #update }
 Game >> changePositionAfterRollingDicesOf: aPlayer on: aNumberOfSlots [
-	| slotIndex |
 	self move: aPlayer forward: aNumberOfSlots.
 	self activatePermanentCardsFor: aPlayer.
-	slotIndex  := (positions at: aPlayer) slot.
-	(board slotAt: slotIndex ) activateEffectOn: self.
-	lastSlotEffectActivated := board slotAt: slotIndex.
+	
 ]
 
 { #category : #update }
@@ -161,11 +154,7 @@ Game >> deactivate: aPermanentCard [
 
 { #category : #adding }
 Game >> dealCardTo: aPlayer [
-	| newCards |
-	newCards := OrderedCollection new.
-	newCards addAll: (self cardsOf: aPlayer).
-	newCards add: deckOfCards dealOneCard.
-	cardsInHand at: aPlayer put: newCards
+	(self cardsOf: aPlayer) add: deckOfCards dealOneCard
 ]
 
 { #category : #accessing }
@@ -356,8 +345,12 @@ Game >> playsWhenGameIsEnded: aPlayer [
 
 { #category : #update }
 Game >> playsWhileGameIsBeingPlayed: aPlayer [
+	| slotIndex |
 	self assertIsTurnOf: aPlayer.
 	(self stateOf: aPlayer) rollDicesFor: aPlayer in: self.
+	slotIndex := (positions at: aPlayer) slot.
+	(board slotAt: slotIndex) activateEffectOn: self.
+	lastSlotEffectActivated := board slotAt: slotIndex.
 	self changeStateAfterTurnOf: aPlayer
 ]
 
