@@ -14,6 +14,15 @@ GameTest >> boardWith10SlotsAnd1AtomicBomb [
 ]
 
 { #category : #'creation-boards' }
+GameTest >> boardWith10SlotsAnd1JailSlot [
+	| board jailSlot |
+	board := DeterministicBoard withSlots: 10.
+	jailSlot := JailSlot new.
+	board addSpecial: jailSlot at: 5.
+	^ board
+]
+
+{ #category : #'creation-boards' }
 GameTest >> boardWith10SlotsAnd3CardSlots [
 	| board cardSlot |
 	board := DeterministicBoard withSlots: 10.
@@ -337,6 +346,40 @@ GameTest >> gameWith2PlayersAnd1DiceOnWormHoleBoard [
 	dices := OrderedCollection new.
 	dices add: dice1.
 	deckOfCards := RandomDeck new.
+	game := Game
+		on: board
+		beeingPlayedBy: players
+		throwing: dices
+		withLaps: 2
+		and: deckOfCards.
+	^ game
+]
+
+{ #category : #'creation-games' }
+GameTest >> gameWith2PlayersAnd2DicesOnDeterministicDeckWithFreedomCard [
+	| game board juan hernan dice1 dice2 players dices deckOfCards cards |
+	board := self boardWith10SlotsAnd1JailSlot.
+	juan := 'Juan'.
+	hernan := 'Hernan'.
+	dice1 := DeterministicDice withFaces: 6 andValues: #(2 4 5 6 1 3).
+	dice2 := DeterministicDice withFaces: 8 andValues: #(2 1 7 3 4 5).
+	players := OrderedCollection new.
+	players
+		add: juan;
+		add: hernan.
+	dices := OrderedCollection new.
+	dices
+		add: dice1;
+		add: dice2.
+	cards := OrderedCollection new.
+	cards add: AccelerationCard.
+	cards add: CancellationCard.
+	cards add: OverloadCard.
+	cards add: FreedomCard.
+	cards add: SpeedCard.
+	cards add: RedoCard.
+	cards add: RepeatCard.
+	deckOfCards := DeterministicDeck withCards: cards.
 	game := Game
 		on: board
 		beeingPlayedBy: players
@@ -825,6 +868,54 @@ GameTest >> testEachPlayerReceivesTwoCardsFromRandomDeck [
 	self assert: ((game cardsOf: playerAt1)  allSatisfy: [ :card | cardsClasses includes: card class .]).
 	self assert: (game cardsOf: playerAt2) size equals: 2.
 	self assert: ((game cardsOf: playerAt2)  allSatisfy: [ :card | cardsClasses includes: card class .]).
+]
+
+{ #category : #'test-cards' }
+GameTest >> testFreedomCard [
+	| game playerAt1 playerAt2 card |
+	game := self gameWith2PlayersAnd2DicesOnDeterministicDeckWithFreedomCard.
+	playerAt1 := game players at: 1.
+	playerAt2 := game players at: 2.
+	card := (game cardsOf: playerAt1) at: 2.
+	self assert: card class equals: FreedomCard.
+	game plays: playerAt1.
+	self assert: (game slotOf: playerAt1) equals: 5.
+	self assert: (game lapsCompletedOf: playerAt1) equals: 0.
+	self assert: (game slotOf: playerAt2) equals: 1.
+	self assert: (game lapsCompletedOf: playerAt2) equals: 0.
+	game plays: playerAt2.
+	self assert: (game slotOf: playerAt1) equals: 5.
+	self assert: (game lapsCompletedOf: playerAt1) equals: 0.
+	self assert: (game slotOf: playerAt2) equals: 6.
+	self assert: (game lapsCompletedOf: playerAt2) equals: 0.
+	game plays: playerAt1.
+	self assert: (game slotOf: playerAt1) equals: 5.
+	self assert: (game lapsCompletedOf: playerAt1) equals: 0.
+	self assert: (game slotOf: playerAt2) equals: 6.
+	self assert: (game lapsCompletedOf: playerAt2) equals: 0.
+	game plays: playerAt2.
+	self assert: (game slotOf: playerAt1) equals: 5.
+	self assert: (game lapsCompletedOf: playerAt1) equals: 0.
+	self assert: (game slotOf: playerAt2) equals: 5.
+	self assert: (game lapsCompletedOf: playerAt2) equals: 1.
+	self
+		should: [ game plays: playerAt1 throwing: card to: playerAt2 ]
+		raise: AssertionFailure
+		withExceptionDo:
+			[ :signal | self assert: signal messageText equals: 'You don"t have to choose any player.' ].
+	self
+		should: [ game plays: playerAt1 throwing: card for: ((game cardsOf: playerAt2) at: 1) ]
+		raise: AssertionFailure
+		withExceptionDo: [ :signal | 
+			self
+				assert: signal messageText
+				equals: 'You don"t have to choose any card.' ].
+	game plays: playerAt1 throwing: card.
+	game plays: playerAt1.
+	self assert: (game slotOf: playerAt1) equals: 10.
+	self assert: (game lapsCompletedOf: playerAt1) equals: 1.
+	self assert: (game slotOf: playerAt2) equals: 5.
+	self assert: (game lapsCompletedOf: playerAt2) equals: 1.
 ]
 
 { #category : #'test-games' }

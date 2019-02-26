@@ -42,7 +42,8 @@ Class {
 		'lastSlotEffectActivated',
 		'cardsInHand',
 		'instantCardsAffectingEachPlayer',
-		'permanentCardsAffectingEachPlayer'
+		'permanentCardsAffectingEachPlayer',
+		'playerStates'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -65,10 +66,11 @@ Game >> activatePermanentCardsFor: aPlayer [
 
 { #category : #adding }
 Game >> addToPermanentCards: aCard for: aPlayer [
-	| newHand |
-	newHand := self permanentCardsAffecting: aPlayer.
-	newHand add: aCard.
-	 permanentCardsAffectingEachPlayer at: aPlayer put: newHand
+	| permanentCards |
+	permanentCards := OrderedCollection new.
+	permanentCards addAll: (self permanentCardsAffecting: aPlayer).
+	permanentCards add: aCard.
+	 permanentCardsAffectingEachPlayer at: aPlayer put: permanentCards
 ]
 
 { #category : #assertions }
@@ -117,6 +119,16 @@ Game >> changeLastCardPlayed: aCard [
 ]
 
 { #category : #update }
+Game >> changePositionAfterRollingDicesOf: aPlayer on: aNumberOfSlots [
+	| slotIndex |
+	self move: aPlayer forward: aNumberOfSlots.
+	self activatePermanentCardsFor: aPlayer.
+	slotIndex  := (positions at: aPlayer) slot.
+	(board slotAt: slotIndex ) activateEffectOn: self.
+	lastSlotEffectActivated := board slotAt: slotIndex.
+]
+
+{ #category : #update }
 Game >> changeStateAfterTurnOf: aPlayer [
 	(self lapsCompletedOf: aPlayer) >= self laps
 		ifTrue: [ self endGame ]
@@ -150,9 +162,10 @@ Game >> deactivate: aPermanentCard [
 { #category : #adding }
 Game >> dealCardTo: aPlayer [
 	| newCards |
-	newCards := self cardsOf: aPlayer.
+	newCards := OrderedCollection new.
+	newCards addAll: (self cardsOf: aPlayer).
 	newCards add: deckOfCards dealOneCard.
-	cardsInHand at: aPlayer   put: newCards
+	cardsInHand at: aPlayer put: newCards
 ]
 
 { #category : #accessing }
@@ -171,13 +184,24 @@ Game >> endGame [
 	
 ]
 
+{ #category : #action }
+Game >> giveFreedomTo: aPlayer [
+	playerStates at: aPlayer put: PlayerFree new.
+]
+
 { #category : #update }
 Game >> ifTurnOf: aPlayer [
 	^ (self currentPlayer ) == aPlayer
 ]
 
+{ #category : #action }
+Game >> imprison: aPlayer [
+	playerStates at: aPlayer put: PlayerImprisoned new.
+]
+
 { #category : #initialization }
 Game >> initializeOn: aBoard beeingPlayedBy: aGroupOfPlayers throwing: aGroupOfDices withLaps: anAmountOfLaps and: aDeckOfCards [
+	playerStates := Dictionary new.
 	positions := Dictionary new.
 	cardsInHand := Dictionary new.
 	permanentCardsAffectingEachPlayer := Dictionary new.
@@ -186,6 +210,7 @@ Game >> initializeOn: aBoard beeingPlayedBy: aGroupOfPlayers throwing: aGroupOfD
 	deckOfCards := aDeckOfCards.
 	aGroupOfPlayers
 		do: [ :each | 
+			playerStates at: each put: PlayerFree new.
 			instantCardsAffectingEachPlayer at: each  put: OrderedCollection new.
 			permanentCardsAffectingEachPlayer
 				at: each put: OrderedCollection new.
@@ -224,6 +249,11 @@ Game >> lastSlotEffectActivated [
 	^ lastSlotEffectActivated.
 ]
 
+{ #category : #accessing }
+Game >> maximumValueOfDicesRoll [
+	^ dices inject: 0 into: [ :sum :each | sum + each numberOfFaces ]
+]
+
 { #category : #update }
 Game >> move: aPlayer backward: aNumberOfSlots [
 	| position actualSlot actualLap |
@@ -260,11 +290,6 @@ Game >> move: aPlayer forward: aNumberOfSlots [
 { #category : #accessing }
 Game >> nextPlayerIndex [
 	^ nextPlayerIndex
-]
-
-{ #category : #accessing }
-Game >> nextPlayerIndex: anObject [
-	nextPlayerIndex := anObject
 ]
 
 { #category : #adding }
@@ -331,13 +356,8 @@ Game >> playsWhenGameIsEnded: aPlayer [
 
 { #category : #update }
 Game >> playsWhileGameIsBeingPlayed: aPlayer [
-	| slotIndex |
 	self assertIsTurnOf: aPlayer.
-	self rollDicesFor: aPlayer.
-	self activatePermanentCardsFor: aPlayer.
-	slotIndex  := (positions at: aPlayer) slot.
-	(board slotAt: slotIndex ) activateEffectOn: self.
-	lastSlotEffectActivated := board slotAt: slotIndex. 
+	(self stateOf: aPlayer) rollDicesFor: aPlayer in: self.
 	self changeStateAfterTurnOf: aPlayer
 ]
 
@@ -371,9 +391,28 @@ Game >> returnToPreviousTurn [
 			 ]
 ]
 
+{ #category : #action }
+Game >> rollDices [
+	^ dices sumNumbers: [ :each | each rollDice ].
+]
+
 { #category : #update }
 Game >> rollDicesFor: aPlayer [
 	self move: aPlayer forward: (dices sumNumbers: [ :each | each rollDice ]).
+]
+
+{ #category : #update }
+Game >> rollDicesWhileBeingFreeFor: aPlayer [
+	self changePositionAfterRollingDicesOf: aPlayer on: self rollDices
+]
+
+{ #category : #update }
+Game >> rollDicesWhileBeingImprisonedFor: aPlayer [
+	| sumDices |
+	sumDices := self rollDices.
+	sumDices = self maximumValueOfDicesRoll
+		ifTrue: [ self giveFreedomTo: aPlayer.
+			self changePositionAfterRollingDicesOf: aPlayer on: sumDices ]
 ]
 
 { #category : #accessing }
@@ -387,6 +426,11 @@ Game >> sortPlayersByPosition [
 		asSortedCollection:
 			[ :player | self lapsCompletedOf: player ] descending
 				, [ :player | self slotOf: player ] descending
+]
+
+{ #category : #accessing }
+Game >> stateOf: aPlayer [
+	^ playerStates at: aPlayer.
 ]
 
 { #category : #accessing }
