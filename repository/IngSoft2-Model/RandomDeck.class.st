@@ -22,14 +22,9 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #RandomDeck,
-	#superclass : #Object,
+	#superclass : #Deck,
 	#category : #'IngSoft2-Model'
 }
-
-{ #category : #update }
-RandomDeck >> dealCards: anAmountOfCards [
-	^ ((1 to: anAmountOfCards) collect: [ :n | self dealOneCard ]) asOrderedCollection
-]
 
 { #category : #update }
 RandomDeck >> dealOneCard [

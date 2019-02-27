@@ -751,9 +751,9 @@ GameTest >> testCancellationCard [
 			[ :signal | self assert: signal messageText equals: 'Must choose another card to throw the card.' ].
 	self
 		should: [ game plays: playerAt2 throwing: card to: playerAt1 ]
-		raise: AssertionFailure withExceptionDo: [ :signal |
-			self assert: signal messageText
-			equals: 'You don"t have to choose any player.' ].
+		raise: AssertionFailure
+		withExceptionDo:
+			[ :signal | self assert: signal messageText equals: 'You don"t have to choose any player.' ].
 	game plays: playerAt2 throwing: card for: permanentCard.
 	game plays: playerAt1.
 	self assert: (game slotOf: playerAt1) equals: 5.
@@ -957,17 +957,15 @@ GameTest >> testFreedomCard [
 	self
 		should: [ game plays: playerAt1 throwing: card for: ((game cardsOf: playerAt2) at: 1) ]
 		raise: AssertionFailure
-		withExceptionDo: [ :signal | 
-			self
-				assert: signal messageText
-				equals: 'You don"t have to choose any card.' ].
+		withExceptionDo:
+			[ :signal | self assert: signal messageText equals: 'You don"t have to choose any card.' ].
 	game plays: playerAt1 throwing: card.
 	self assert: (game stateOf: playerAt1) class equals: PlayerFree.
 	game plays: playerAt1.
 	self assert: (game slotOf: playerAt1) equals: 9.
 	self assert: (game lapsCompletedOf: playerAt1) equals: 1.
 	self assert: (game slotOf: playerAt2) equals: 5.
-	self assert: (game lapsCompletedOf: playerAt2) equals: 1.
+	self assert: (game lapsCompletedOf: playerAt2) equals: 1
 ]
 
 { #category : #'test-games' }

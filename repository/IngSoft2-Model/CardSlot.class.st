@@ -28,5 +28,5 @@ Class {
 
 { #category : #action }
 CardSlot >> activateEffectOn: aGame [
-	aGame  dealCardTo: aGame currentPlayer.
+	aGame dealCardTo: aGame currentPlayer
 ]

@@ -27,6 +27,6 @@ Class {
 }
 
 { #category : #action }
-JailSlot >> activateEffectOn: aGame [ 
+JailSlot >> activateEffectOn: aGame [
 	aGame imprison: aGame currentPlayer
 ]

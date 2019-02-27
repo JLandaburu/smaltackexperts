@@ -49,5 +49,5 @@ Position >> lapsCompleted [
 
 { #category : #accessing }
 Position >> slot [
-	^ slot.
+	^ slot
 ]

@@ -22,10 +22,7 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #DeterministicBoard,
-	#superclass : #Object,
-	#instVars : [
-		'slots'
-	],
+	#superclass : #Board,
 	#category : #'IngSoft2-Tests'
 }
 
@@ -48,19 +45,4 @@ DeterministicBoard >> initializeWithSlots: anAmountOfSlots [
 	slots := OrderedCollection new: anAmountOfSlots.
 	slots add: (EmptySlot new) withOccurrences: anAmountOfSlots.
 	slots := slots asArray.
-]
-
-{ #category : #accessing }
-DeterministicBoard >> numberOfSlots [
-	^ slots size .
-]
-
-{ #category : #accessing }
-DeterministicBoard >> slotAt: aSlotIndex [
-^ self slots at: aSlotIndex 
-]
-
-{ #category : #accessing }
-DeterministicBoard >> slots [
-	^ slots
 ]

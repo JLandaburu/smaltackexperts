@@ -22,11 +22,10 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #DeterministicDice,
-	#superclass : #Object,
+	#superclass : #Dice,
 	#instVars : [
 		'nextIndexOfDeterministicValue',
-		'deterministicValues',
-		'numberOfFaces'
+		'deterministicValues'
 	],
 	#category : #'IngSoft2-Tests'
 }
@@ -49,11 +48,6 @@ DeterministicDice >> initializeWithFaces: anAmountOfFaces andValues: aSetOfValue
 	numberOfFaces := anAmountOfFaces.
 	deterministicValues := aSetOfValues.
 	nextIndexOfDeterministicValue := numberOfFaces
-]
-
-{ #category : #accessing }
-DeterministicDice >> numberOfFaces [
-^numberOfFaces .
 ]
 
 { #category : #actions }

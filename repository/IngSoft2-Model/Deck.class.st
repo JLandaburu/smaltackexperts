@@ -17,32 +17,21 @@ Public API and Key Messages
  
 Internal Representation and Key Implementation Points.
 
-    Instance Variables
-	numberOfFaces:		<Object>
-
 
     Implementation Points
 "
 Class {
-	#name : #RandomDice,
-	#superclass : #Dice,
+	#name : #Deck,
+	#superclass : #Object,
 	#category : #'IngSoft2-Model'
 }
 
-{ #category : #initialization }
-RandomDice class >> withFaces: anAmountOfFaces [
-anAmountOfFaces>1
-	ifTrue: [ ^ self new initializeWithFaces: anAmountOfFaces ]
-		ifFalse: [ AssertionFailure
-				signal: 'you can''t create a dice with less than 2 faces' ]
+{ #category : #update }
+Deck >> dealCards: anAmountOfCards [
+	^ ((1 to: anAmountOfCards) collect: [ :n | self dealOneCard ]) asOrderedCollection
 ]
 
-{ #category : #initialization }
-RandomDice >> initializeWithFaces: anAmountOfFaces [
-	numberOfFaces := anAmountOfFaces
-]
-
-{ #category : #actions }
-RandomDice >> rollDice [
-	^ (1 to: numberOfFaces) atRandom
+{ #category : #update }
+Deck >> dealOneCard [
+	self subclassResponsibility
 ]
