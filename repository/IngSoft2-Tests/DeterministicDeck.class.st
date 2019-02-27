@@ -22,7 +22,7 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #DeterministicDeck,
-	#superclass : #Object,
+	#superclass : #Deck,
 	#instVars : [
 		'nextCardIndex',
 		'cardsOrdering'
@@ -49,17 +49,6 @@ DeterministicDeck >> changeCardIndex [
 		ifFalse: [
 			nextCardIndex := nextCardIndex + 1. 
 			 ]
-]
-
-{ #category : #update }
-DeterministicDeck >> dealCards [
-	| cards |
-	cards := OrderedCollection new.
-	2 timesRepeat: [ 
-		cards add: (cardsOrdering at: nextCardIndex) new.
-		self changeCardIndex.
-		 ].
-	^ cards
 ]
 
 { #category : #update }

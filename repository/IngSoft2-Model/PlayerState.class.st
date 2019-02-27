@@ -21,16 +21,12 @@ Internal Representation and Key Implementation Points.
     Implementation Points
 "
 Class {
-	#name : #WormHole,
-	#superclass : #SlotType,
+	#name : #PlayerState,
+	#superclass : #Object,
 	#category : #'IngSoft2-Model'
 }
 
 { #category : #action }
-WormHole >> activateEffectOn: aGame [
-	| slotsToMove actualPlayer |
-	slotsToMove := 4.
-	actualPlayer := aGame currentPlayer.
-	aGame move: actualPlayer backward: slotsToMove.
-	^ aGame
+PlayerState >> rollDicesFor: aPlayer in: aGame [
+	self subclassResponsibility
 ]

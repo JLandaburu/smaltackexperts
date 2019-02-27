@@ -22,24 +22,11 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #RandomDeck,
-	#superclass : #Object,
+	#superclass : #Deck,
 	#category : #'IngSoft2-Model'
 }
 
 { #category : #update }
-RandomDeck >> dealCards [
-	| cardsClasses cards |
-	cardsClasses := (Card subclasses) asArray.
-		cards := OrderedCollection new.
-		cards add: (cardsClasses at: (Random new nextInt: 6)) new.
-		cards add: (cardsClasses at: (Random new nextInt: 6)) new.
-	^ cards.
-]
-
-{ #category : #update }
 RandomDeck >> dealOneCard [
-	| card cardsClasses |
-	cardsClasses := (Card subclasses) asArray.
-	card := (cardsClasses at: (Random new nextInt: 6)) new.
-	^ card.
+	^ Card subclasses atRandom new
 ]

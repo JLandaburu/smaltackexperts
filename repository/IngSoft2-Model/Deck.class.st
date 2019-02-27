@@ -21,16 +21,17 @@ Internal Representation and Key Implementation Points.
     Implementation Points
 "
 Class {
-	#name : #WormHole,
-	#superclass : #SlotType,
+	#name : #Deck,
+	#superclass : #Object,
 	#category : #'IngSoft2-Model'
 }
 
-{ #category : #action }
-WormHole >> activateEffectOn: aGame [
-	| slotsToMove actualPlayer |
-	slotsToMove := 4.
-	actualPlayer := aGame currentPlayer.
-	aGame move: actualPlayer backward: slotsToMove.
-	^ aGame
+{ #category : #update }
+Deck >> dealCards: anAmountOfCards [
+	^ ((1 to: anAmountOfCards) collect: [ :n | self dealOneCard ]) asOrderedCollection
+]
+
+{ #category : #update }
+Deck >> dealOneCard [
+	self subclassResponsibility
 ]

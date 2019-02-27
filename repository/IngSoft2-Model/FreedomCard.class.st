@@ -21,44 +21,44 @@ Internal Representation and Key Implementation Points.
     Implementation Points
 "
 Class {
-	#name : #AccelerationCard,
+	#name : #FreedomCard,
 	#superclass : #Card,
 	#category : #'IngSoft2-Model'
 }
 
 { #category : #action }
-AccelerationCard >> activateEffectOn: aGame to: aPlayer [ 
-	aGame move: aPlayer forward: 1. 
+FreedomCard >> activateEffectOn: aGame to: aPlayer [ 
+	aGame giveFreedomTo: aPlayer
 ]
 
 { #category : #redo }
-AccelerationCard >> redoOn: aGame by: aPlayer for: anotherCard with: aRedoCard [
+FreedomCard >> redoOn: aGame by: aPlayer for: anotherCard with: aRedoCard [ 
 	AssertionFailure signal: 'You don"t have to choose any card.'
 ]
 
 { #category : #redo }
-AccelerationCard >> redoOn: aGame by: aPlayer to: anotherPlayer with: aRedoCard [
+FreedomCard >> redoOn: aGame by: aPlayer to: anotherPlayer with: aRedoCard [
 	AssertionFailure signal: 'You don"t have to choose any player.'
 ]
 
 { #category : #redo }
-AccelerationCard >> redoOn: aGame by: aPlayer with: aRedoCard [
-	aGame playPermanentCard: aRedoCard of: aPlayer.
-	aGame players do: [ :each | aGame addToPermanentCards: aRedoCard for: each ]
+FreedomCard >> redoOn: aGame by: aPlayer with: aRedoCard [
+	self activateEffectOn: aGame to: aPlayer.
+	aGame playInstantCard: aRedoCard of: aPlayer
 ]
 
 { #category : #action }
-AccelerationCard >> thrownOn: aGame by: aPlayer [
-	aGame playPermanentCard: self of: aPlayer.
-	aGame players do: [ :each | aGame addToPermanentCards: self for: each ]
+FreedomCard >> thrownOn: aGame by: aPlayer [ 
+	self activateEffectOn: aGame to: aPlayer.
+	aGame playInstantCard: self of: aPlayer
 ]
 
 { #category : #action }
-AccelerationCard >> thrownOn: aGame by: aPlayer for: anotherCard [
+FreedomCard >> thrownOn: aGame by: aPlayer for: anotherCard [ 
 	AssertionFailure signal: 'You don"t have to choose any card.'
 ]
 
 { #category : #action }
-AccelerationCard >> thrownOn: aGame by: aPlayer to: anotherPlayer [ 
+FreedomCard >> thrownOn: aGame by: aPlayer to: anotherPlayer [ 
 	AssertionFailure signal: 'You don"t have to choose any player.'
 ]

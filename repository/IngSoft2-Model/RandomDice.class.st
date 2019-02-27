@@ -25,10 +25,7 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #RandomDice,
-	#superclass : #Object,
-	#instVars : [
-		'numberOfFaces'
-	],
+	#superclass : #Dice,
 	#category : #'IngSoft2-Model'
 }
 
@@ -42,17 +39,10 @@ anAmountOfFaces>1
 
 { #category : #initialization }
 RandomDice >> initializeWithFaces: anAmountOfFaces [
-numberOfFaces:= anAmountOfFaces.
-]
-
-{ #category : #accessing }
-RandomDice >> numberOfFaces [
-^numberOfFaces.
+	numberOfFaces := anAmountOfFaces
 ]
 
 { #category : #actions }
 RandomDice >> rollDice [
-
-	^((1 to: numberOfFaces) atRandom).
-
+	^ (1 to: numberOfFaces) atRandom
 ]

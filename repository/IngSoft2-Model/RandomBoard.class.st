@@ -25,10 +25,7 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #RandomBoard,
-	#superclass : #Object,
-	#instVars : [
-		'slots'
-	],
+	#superclass : #Board,
 	#category : #'IngSoft2-Model'
 }
 
@@ -54,12 +51,7 @@ RandomBoard >> initializeWithSlots: anAmountOfSlots [
 	
 ]
 
-{ #category : #accessing }
-RandomBoard >> numberOfSlots [
-	^ slots size . 
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #update }
 RandomBoard >> slotFromNumber: aNumber [
 	aNumber <= 38 ifTrue: [ ^ EmptySlot new ].
 	aNumber <= 58 ifTrue: [ ^ WormHole new ].
@@ -67,9 +59,4 @@ RandomBoard >> slotFromNumber: aNumber [
 	aNumber <= 88 ifTrue: [ ^ CardSlot new ].
 	aNumber <= 98 ifTrue: [ ^ MoonWalk new ].
 	^ AtomicBomb new.
-]
-
-{ #category : #accessing }
-RandomBoard >> slots [
-	^ slots
 ]
